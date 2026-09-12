@@ -1,168 +1,586 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TradePro Dashboard</title>
 
-    <title>My Trading Platform</title>
+<style>
+* {
+  box-sizing: border-box;
+}
 
-    <style>
-        body {
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background: #111827;
-            color: white;
-        }
+body {
+  margin: 0;
+  background: #0b1120;
+  color: #e5e7eb;
+  font-family: Arial, sans-serif;
+}
 
-        header {
-            padding: 20px;
-            background: #1f2937;
-            display: flex;
-            justify-content: space-between;
-        }
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  background: #111827;
+  border-bottom: 1px solid #263244;
+}
 
-        .container {
-            padding: 20px;
-        }
+.logo {
+  font-size: 22px;
+  font-weight: bold;
+  color: #38bdf8;
+}
 
-        .balance {
-            font-size: 20px;
-            margin-bottom: 20px;
-        }
+.status {
+  color: #22c55e;
+  font-size: 13px;
+}
 
-        .chart {
-            height: 350px;
-            background: #0f172a;
-            border: 1px solid #374151;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
+.container {
+  max-width: 1200px;
+  margin: auto;
+  padding: 18px;
+}
 
-        .price {
-            font-size: 28px;
-            margin-bottom: 15px;
-        }
+.cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 18px;
+}
 
-        input {
-            padding: 12px;
-            width: 120px;
-            margin-bottom: 15px;
-        }
+.card {
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 10px;
+  padding: 15px;
+}
 
-        button {
-            padding: 14px 30px;
-            border: none;
-            color: white;
-            font-weight: bold;
-            cursor: pointer;
-            margin-right: 10px;
-        }
+.card small {
+  color: #94a3b8;
+}
 
-        .buy {
-            background: green;
-        }
+.card h2 {
+  margin: 8px 0 0;
+  font-size: 22px;
+}
 
-        .sell {
-            background: red;
-        }
+.green {
+  color: #22c55e;
+}
 
-        table {
-            width: 100%;
-            margin-top: 30px;
-            border-collapse: collapse;
-        }
+.red {
+  color: #ef4444;
+}
 
-        th, td {
-            padding: 12px;
-            border-bottom: 1px solid #374151;
-            text-align: left;
-        }
-    </style>
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  background: #111827;
+  border: 1px solid #263244;
+  padding: 12px;
+  border-radius: 10px 10px 0 0;
+}
+
+select, button {
+  background: #1e293b;
+  color: #e5e7eb;
+  border: 1px solid #334155;
+  padding: 9px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #334155;
+}
+
+.time-btn.active {
+  background: #0284c7;
+  border-color: #38bdf8;
+}
+
+.chart-box {
+  background: #0f172a;
+  border: 1px solid #263244;
+  border-top: none;
+  padding: 10px;
+  position: relative;
+}
+
+canvas {
+  display: block;
+  width: 100%;
+  height: 420px;
+}
+
+.price-info {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 4px;
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.trade-panel {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.trade-box {
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 10px;
+  padding: 16px;
+}
+
+.trade-box h3 {
+  margin-top: 0;
+}
+
+.trade-box input {
+  width: 100%;
+  padding: 11px;
+  background: #0f172a;
+  color: white;
+  border: 1px solid #334155;
+  border-radius: 6px;
+  margin: 8px 0 12px;
+}
+
+.trade-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.buy {
+  background: #166534;
+  border-color: #22c55e;
+  flex: 1;
+}
+
+.sell {
+  background: #991b1b;
+  border-color: #ef4444;
+  flex: 1;
+}
+
+.positions {
+  margin-top: 18px;
+  background: #111827;
+  border: 1px solid #263244;
+  border-radius: 10px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 500px;
+}
+
+th, td {
+  text-align: left;
+  padding: 12px 8px;
+  border-bottom: 1px solid #263244;
+}
+
+th {
+  color: #94a3b8;
+  font-size: 13px;
+}
+
+.empty {
+  color: #94a3b8;
+  padding: 15px 0;
+}
+
+.footer {
+  text-align: center;
+  color: #64748b;
+  font-size: 12px;
+  padding: 25px;
+}
+
+@media (max-width: 650px) {
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .trade-panel {
+    grid-template-columns: 1fr;
+  }
+
+  canvas {
+    height: 300px;
+  }
+
+  .header {
+    padding: 14px;
+  }
+
+  .container {
+    padding: 10px;
+  }
+}
+</style>
 </head>
 
 <body>
 
-<header>
-    <strong>My Trading Platform</strong>
-    <span>Balance: $10,000</span>
+<header class="header">
+  <div class="logo">TradePro</div>
+  <div class="status">● Practice Mode</div>
 </header>
 
 <div class="container">
 
-    <h2>BTC/USD</h2>
-
-    <div class="price">
-        $65,000
+  <div class="cards">
+    <div class="card">
+      <small>Virtual Balance</small>
+      <h2 id="balance">$10,000.00</h2>
     </div>
 
-    <div class="chart">
-        📈 CHART WILL GO HERE
+    <div class="card">
+      <small>Equity</small>
+      <h2 id="equity">$10,000.00</h2>
     </div>
 
-    <h3>Place Trade</h3>
+    <div class="card">
+      <small>Current Price</small>
+      <h2 id="currentPrice" class="green">2,350.00</h2>
+    </div>
+  </div>
 
-    <label>Quantity</label><br>
+  <div class="toolbar">
+    <select id="pairSelect">
+      <option value="XAU/USD">XAU/USD</option>
+      <option value="BTC/USD">BTC/USD</option>
+      <option value="EUR/USD">EUR/USD</option>
+    </select>
 
-    <input type="number" id="quantity" value="0.01">
+    <button class="time-btn active" data-time="1m">1m</button>
+    <button class="time-btn" data-time="5m">5m</button>
+    <button class="time-btn" data-time="15m">15m</button>
+    <button class="time-btn" data-time="1H">1H</button>
+    <button class="time-btn" data-time="4H">4H</button>
+  </div>
 
-    <br>
+  <div class="chart-box">
+    <div class="price-info">
+      <span id="chartPair">XAU/USD · 1m</span>
+      <span>Simulated market data</span>
+    </div>
+    <canvas id="chart"></canvas>
+  </div>
 
-    <button class="buy" onclick="buy()">BUY</button>
+  <div class="trade-panel">
+    <div class="trade-box">
+      <h3>Place Practice Trade</h3>
+      <label>Trade amount ($)</label>
+      <input type="number" id="tradeAmount" value="100" min="1">
+      <div class="trade-buttons">
+        <button class="buy" onclick="placeTrade('BUY')">BUY</button>
+        <button class="sell" onclick="placeTrade('SELL')">SELL</button>
+      </div>
+    </div>
 
-    <button class="sell" onclick="sell()">SELL</button>
+    <div class="trade-box">
+      <h3>Market Information</h3>
+      <p>Pair: <strong id="infoPair">XAU/USD</strong></p>
+      <p>Spread: <span class="green">0.20</span></p>
+      <p>Market: <span class="green">Open (Simulation)</span></p>
+      <p>Leverage: 1:100 <small>(display only)</small></p>
+    </div>
+  </div>
 
-    <h3>Trade History</h3>
-
-    <table>
-        <tr>
-            <th>Type</th>
-            <th>Asset</th>
-            <th>Quantity</th>
-            <th>Price</th>
-        </tr>
-
-        <tbody id="trades"></tbody>
-    </table>
+  <div class="positions">
+    <h3>Open Positions</h3>
+    <div id="positionsList" class="empty">
+      No open positions. Place a practice trade to begin.
+    </div>
+  </div>
 
 </div>
 
+<div class="footer">
+  TradePro © 2026 · Educational practice platform · No real money involved
+</div>
+
 <script>
+const canvas = document.getElementById("chart");
+const ctx = canvas.getContext("2d");
 
-function buy() {
+let balance = 10000;
+let currentPrice = 2350;
+let selectedPair = "XAU/USD";
+let selectedTime = "1m";
+let candles = [];
+let positions = [];
 
-    let quantity =
-        document.getElementById("quantity").value;
+const pairPrices = {
+  "XAU/USD": 2350,
+  "BTC/USD": 65000,
+  "EUR/USD": 1.0850
+};
 
-    addTrade("BUY", quantity);
+function resizeCanvas() {
+  const ratio = window.devicePixelRatio || 1;
+  const rect = canvas.getBoundingClientRect();
 
+  canvas.width = rect.width * ratio;
+  canvas.height = rect.height * ratio;
+
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+  drawChart();
 }
 
-function sell() {
+function generateCandles() {
+  candles = [];
+  let price = currentPrice;
 
-    let quantity =
-        document.getElementById("quantity").value;
+  for (let i = 0; i < 45; i++) {
+    const open = price;
+    const movement = (Math.random() - 0.48) * (currentPrice * 0.003);
+    const close = open + movement;
+    const high = Math.max(open, close) + Math.random() * (currentPrice * 0.0015);
+    const low = Math.min(open, close) - Math.random() * (currentPrice * 0.0015);
 
-    addTrade("SELL", quantity);
+    candles.push({ open, close, high, low });
+    price = close;
+  }
 
+  currentPrice = candles[candles.length - 1].close;
 }
 
-function addTrade(type, quantity) {
+function drawChart() {
+  const width = canvas.clientWidth;
+  const height = canvas.clientHeight;
 
-    let table =
-        document.getElementById("trades");
+  ctx.clearRect(0, 0, width, height);
 
-    let row = table.insertRow();
+  // Grid
+  ctx.strokeStyle = "#1e293b";
+  ctx.lineWidth = 1;
 
-    row.innerHTML =
-        `<td>${type}</td>
-         <td>BTC/USD</td>
-         <td>${quantity}</td>
-         <td>$65,000</td>`;
+  for (let i = 1; i < 6; i++) {
+    const y = (height / 6) * i;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(width, y);
+    ctx.stroke();
+  }
 
+  for (let i = 1; i < 8; i++) {
+    const x = (width / 8) * i;
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, height);
+    ctx.stroke();
+  }
+
+  if (!candles.length) return;
+
+  const allPrices = candles.flatMap(c => [c.high, c.low]);
+  const maxPrice = Math.max(...allPrices);
+  const minPrice = Math.min(...allPrices);
+  const range = maxPrice - minPrice || 1;
+
+  const candleWidth = Math.max(4, (width / candles.length) * 0.65);
+  const gap = width / candles.length;
+
+  candles.forEach((candle, i) => {
+    const x = i * gap + gap / 2;
+
+    const yHigh = ((maxPrice - candle.high) / range) * (height - 20) + 10;
+    const yLow = ((maxPrice - candle.low) / range) * (height - 20) + 10;
+    const yOpen = ((maxPrice - candle.open) / range) * (height - 20) + 10;
+    const yClose = ((maxPrice - candle.close) / range) * (height - 20) + 10;
+
+    const rising = candle.close >= candle.open;
+    ctx.strokeStyle = rising ? "#22c55e" : "#ef4444";
+    ctx.fillStyle = rising ? "#22c55e" : "#ef4444";
+
+    // Wick
+    ctx.beginPath();
+    ctx.moveTo(x, yHigh);
+    ctx.lineTo(x, yLow);
+    ctx.stroke();
+
+    // Body
+    const bodyTop = Math.min(yOpen, yClose);
+    const bodyHeight = Math.max(2, Math.abs(yClose - yOpen));
+
+    ctx.fillRect(
+      x - candleWidth / 2,
+      bodyTop,
+      candleWidth,
+      bodyHeight
+    );
+  });
+
+  // Current price line
+  const last = candles[candles.length - 1];
+  const priceY = ((maxPrice - last.close) / range) * (height - 20) + 10;
+
+  ctx.setLineDash([5, 5]);
+  ctx.strokeStyle = "#38bdf8";
+  ctx.beginPath();
+  ctx.moveTo(0, priceY);
+  ctx.lineTo(width, priceY);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  ctx.fillStyle = "#38bdf8";
+  ctx.font = "12px Arial";
+  ctx.fillText(formatPrice(currentPrice), width - 75, priceY - 5);
 }
 
+function formatPrice(price) {
+  if (selectedPair === "EUR/USD") {
+    return price.toFixed(5);
+  }
+  return price.toFixed(2);
+}
+
+function updateDisplay() {
+  document.getElementById("balance").textContent =
+    "$" + balance.toFixed(2);
+
+  document.getElementById("equity").textContent =
+    "$" + balance.toFixed(2);
+
+  document.getElementById("currentPrice").textContent =
+    formatPrice(currentPrice);
+
+  document.getElementById("chartPair").textContent =
+    selectedPair + " · " + selectedTime;
+
+  document.getElementById("infoPair").textContent = selectedPair;
+}
+
+function placeTrade(type) {
+  const amount = Number(document.getElementById("tradeAmount").value);
+
+  if (!amount || amount <= 0) {
+    alert("Enter a valid trade amount.");
+    return;
+  }
+
+  if (amount > balance) {
+    alert("Insufficient virtual balance.");
+    return;
+  }
+
+  balance -= amount;
+
+  positions.push({
+    type: type,
+    pair: selectedPair,
+    amount: amount,
+    entry: currentPrice,
+    time: new Date().toLocaleTimeString()
+  });
+
+  updateDisplay();
+  renderPositions();
+}
+
+function renderPositions() {
+  const list = document.getElementById("positionsList");
+
+  if (positions.length === 0) {
+    list.className = "empty";
+    list.textContent = "No open positions.";
+    return;
+  }
+
+  list.className = "";
+
+  let html = `
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Pair</th>
+          <th>Amount</th>
+          <th>Entry</th>
+          <th>Time</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  positions.forEach(p => {
+    html += `
+      <tr>
+        <td class="${p.type === "BUY" ? "green" : "red"}">${p.type}</td>
+        <td>${p.pair}</td>
+        <td>$${p.amount.toFixed(2)}</td>
+        <td>${p.entry.toFixed(2)}</td>
+        <td>${p.time}</td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table>";
+  list.innerHTML = html;
+}
+
+document.getElementById("pairSelect").addEventListener("change", function() {
+  selectedPair = this.value;
+  currentPrice = pairPrices[selectedPair];
+  generateCandles();
+  updateDisplay();
+  drawChart();
+});
+
+document.querySelectorAll(".time-btn").forEach(button => {
+  button.addEventListener("click", function() {
+    document.querySelectorAll(".time-btn").forEach(btn =>
+      btn.classList.remove("active")
+    );
+
+    this.classList.add("active");
+    selectedTime = this.dataset.time;
+    updateDisplay();
+  });
+});
+
+window.addEventListener("resize", resizeCanvas);
+
+function simulateMarket() {
+  const change = (Math.random() - 0.5) * (currentPrice * 0.0008);
+  const previous = currentPrice;
+  currentPrice += change;
+
+  const last = candles[candles.length - 1];
+
+  if (last) {
+    last.close = currentPrice;
+    last.high = Math.max(last.high, currentPrice);
+    last.low = Math.min(last.low, currentPrice);
+  }
+
+  const priceElement = document.getElementById("currentPrice");
+  priceElement.className = currentPrice >= previous ? "green" : "red";
+
+  updateDisplay();
+  drawChart();
+}
+
+generateCandles();
+updateDisplay();
+
+setTimeout(resizeCanvas, 100);
+setInterval(simulateMarket, 2000);
 </script>
 
 </body>
