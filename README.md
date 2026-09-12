@@ -22,7 +22,7 @@ index.html<!DOCTYPE html>
             display: flex;
             justify-content: space-between;
         }
-
+Create trading dashboard
         .container {
             padding: 20px;
         }
